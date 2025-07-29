@@ -4,13 +4,29 @@ const app = express();
 // order of the routes matter a lot
 //dynamic routes and query params
 
-app.get("/user/:userId", (req,res) => {
-    console.log(req.query, req.params);
-    res.send({firstname: "jinal", lastname: "jain"})
-});
+// app.use("/route", rh, rh1, [rh2, rh3], rh4)
 
-app.post("/user", (req,res) => {
-    res.send("Data successfully saved");
+
+app.use("/user", (req,res, next) => {
+    // Route handler 1
+      next();
+    // res.send("Route handler 1");
+    console.log("handling the route back");
+}, [(req,res, next) => {
+    // Route handler 2
+    console.log("handling route 2");
+     next();
+    // res.send("Route handler 2");
+}],(req,res, next) => {
+    // Route handler 2
+    console.log("handling route 3");
+    next();
+    // res.send("Route handler 3");
+},(req,res, next) => {
+    // Route handler 2
+    console.log("handling route 4");
+    // next();
+    res.send("Route handler 4");
 })
 
 // app.delete("/user", (req,res) => {
