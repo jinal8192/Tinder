@@ -2,18 +2,20 @@ const express = require("express");
 
 const app = express();
 // order of the routes matter a lot
+//dynamic routes and query params
 
-app.get("/user", (req,res) => {
+app.get("/user/:userId", (req,res) => {
+    console.log(req.query, req.params);
     res.send({firstname: "jinal", lastname: "jain"})
-})
+});
 
 app.post("/user", (req,res) => {
     res.send("Data successfully saved");
 })
 
-app.delete("/user", (req,res) => {
-    res.send("Deleted successfully");
-})
+// app.delete("/user", (req,res) => {
+//     res.send("Deleted successfully");
+// })
  
 // wildcard route - match every route
 // app.use("/", (req,res) => {
