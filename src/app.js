@@ -3,7 +3,7 @@ const express = require("express");
 
 const app = express();
 
-const {adminAuth, userAuth} = require("./middlewares/auth");
+const { adminAuth, userAuth } = require("./middlewares/auth");
 // order of the routes matter a lot
 //dynamic routes and query params
 
@@ -22,37 +22,28 @@ const {adminAuth, userAuth} = require("./middlewares/auth");
 // difference b/w app.use and app.all
 
 
-app.use("/admin", adminAuth);
 
-app.get("/user/data", userAuth, (req,res) => {
-    // Authentication
-    res.send("userAuth")
+app.get("/getUserData", userAuth, (req, res) => {
+    try {
+        throw new Error("dfsdf");
+        // Logic of DB call and get user data
+        res.send("userAuth");
+    } catch (err) {
+        res.status(500).send("something went wrong");
+    }
+
 })
 
-app.get("/user/login", (req,res) => {
-    // Authentication
-    res.send("user logged in")
-})
-
-
-app.get("/admin/getAllData", (req,res) => {
-    // Authentication
-    res.send("All Data Sent")
-})
-
-app.delete("/admin/deleteUser", (req,res) => {
-    // Authentication
-    res.send("Deleted a user")
-})
-
-// app.delete("/user", (req,res) => {
-//     res.send("Deleted successfully");
-// })
- 
 // wildcard route - match every route
-// app.use("/", (req,res) => {
-//     res.send("hello from server");
-// })
+app.use("/", (err, req, res, next) => {
+    if (err) {
+        //Log your error
+        res.status(500).send("something went wrong1");
+    }
+    // res.send("hello from server");
+})
+
+
 
 app.listen(3000, () => {
     console.log("server listening on 3000 port");
