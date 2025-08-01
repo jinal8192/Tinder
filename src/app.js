@@ -1,9 +1,25 @@
 const express = require("express");
+const connectDB = require('./config/database');
+const User = require('./models/user');
 
 
 const app = express();
 
-const { adminAuth, userAuth } = require("./middlewares/auth");
+// server is not able to read json data we need help of middleware to read json data and convert it into JS object - express.json
+
+app.use(express.json());
+
+app.post("/signup", async (req, res) => {
+
+    //creating a new instance of the User model
+    const user = new User(req.body);
+    try {
+        await user.save();
+        res.send("user added successfully");
+    } catch (err) {
+        res.status(401).send("Error adding user");
+    }
+})
 // order of the routes matter a lot
 //dynamic routes and query params
 
@@ -21,30 +37,12 @@ const { adminAuth, userAuth } = require("./middlewares/auth");
 // handle Auth Middleware for all only GET requests - use app.get
 // difference b/w app.use and app.all
 
-
-
-app.get("/getUserData", userAuth, (req, res) => {
-    try {
-        throw new Error("dfsdf");
-        // Logic of DB call and get user data
-        res.send("userAuth");
-    } catch (err) {
-        res.status(500).send("something went wrong");
-    }
-
+connectDB().then(() => {
+    console.log("Database connected");
+    app.listen(3000, () => {
+        console.log("server listening on 3000 port");
+    })
+}).catch(err => {
+    console.log("Database not connected", err);
 })
 
-// wildcard route - match every route
-app.use("/", (err, req, res, next) => {
-    if (err) {
-        //Log your error
-        res.status(500).send("something went wrong1");
-    }
-    // res.send("hello from server");
-})
-
-
-
-app.listen(3000, () => {
-    console.log("server listening on 3000 port");
-})
