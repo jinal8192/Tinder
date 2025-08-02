@@ -20,6 +20,51 @@ app.post("/signup", async (req, res) => {
         res.status(401).send("Error adding user");
     }
 })
+
+// get user by emailId
+app.get("/user", async (req, res) => {
+    const emailId = req.body.emailId;
+    try {
+        const user = await User.findOne({ emailId });
+        if (!user) {
+            res.status(404).send("user not found");
+        }
+        res.send(user);
+    } catch (err) {
+        res.status(400).send("Something went wrong");
+    }
+})
+
+// Feed API - get all the users from DB
+app.get("/feed", async (req, res) => {
+    try {
+        const users = await User.find({});
+        res.send(users);
+    } catch (err) {
+        res.status(400).send("something went wrong");
+    }
+})
+
+app.patch("/user", async (req, res) => {
+    const {emailId} = req.body.emailId;
+    const data = req.body;
+    try {
+        await User.findByIdAndUpdate(emailId , data);
+        res.send("user updated successfully");
+    } catch (err) {
+        res.status(400).send("something went wrong", err);
+    }
+})
+
+app.delete("/user", async (req, res) => {
+    const userId = req.body.userId;
+    try {
+        const user = await User.findByIdAndDelete(userId);
+        res.send("user deleted successfully");
+    } catch (err) {
+        res.status(400).send("something went wrong");
+    }
+})
 // order of the routes matter a lot
 //dynamic routes and query params
 
@@ -36,6 +81,8 @@ app.post("/signup", async (req, res) => {
 // handle Auth Middleware for all requests GET, POST, DELETE - use app.use
 // handle Auth Middleware for all only GET requests - use app.get
 // difference b/w app.use and app.all
+
+// difference between patch and put
 
 connectDB().then(() => {
     console.log("Database connected");
