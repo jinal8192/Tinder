@@ -45,19 +45,28 @@ app.get("/feed", async (req, res) => {
     }
 })
 
-app.patch("/user", async (req, res) => {
-    const {emailId} = req.body.emailId;
+app.patch("/user/:userId", async (req, res) => {
+    const { id } = req.params.userId;
     const data = req.body;
+ 
+    //Data Sanitization before data is allowed in DB
     try {
-        await User.findByIdAndUpdate(emailId , data);
+        const ALLOWED_UPDATED = ["photoUrl", "about", "gender", "age"];
+        const isUpdateAllowed = Object.keys(data).every((k) => { ALLOWED_UPDATED.includes(k) });
+        if (isUpdateAllowed) {
+            throw new Error("update not allowed");
+        }
+        await User.findByIdAndUpdate(id, data, {
+            runValidators: true
+        });
         res.send("user updated successfully");
     } catch (err) {
-        res.status(400).send("something went wrong", err);
+        res.status(400).send("something went wrong " + err);
     }
 })
 
 app.delete("/user", async (req, res) => {
-        const {emailId} = req.body.emailId;
+    const { emailId } = req.body.emailId;
     try {
         const user = await User.deleteOne(emailId);
         res.send("user deleted successfully");

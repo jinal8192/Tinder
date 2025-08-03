@@ -41,6 +41,11 @@ const userSchema = new Schema({
     },
     skills: {
         type: [String],
+        validate(value) {
+            if (value.length > 5) {
+                throw new Error("Only Five skills are allowed");
+            }
+        }
     }
 }, {
     timestamps: true,
