@@ -17,7 +17,7 @@ app.post("/signup", async (req, res) => {
         await user.save();
         res.send("user added successfully");
     } catch (err) {
-        res.status(401).send("Error adding user");
+        res.status(401).send(err);
     }
 })
 
@@ -57,9 +57,9 @@ app.patch("/user", async (req, res) => {
 })
 
 app.delete("/user", async (req, res) => {
-    const userId = req.body.userId;
+        const {emailId} = req.body.emailId;
     try {
-        const user = await User.findByIdAndDelete(userId);
+        const user = await User.deleteOne(emailId);
         res.send("user deleted successfully");
     } catch (err) {
         res.status(400).send("something went wrong");
