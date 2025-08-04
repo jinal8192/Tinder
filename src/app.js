@@ -1,6 +1,8 @@
 const express = require("express");
 const connectDB = require('./config/database');
 const User = require('./models/user');
+const { validateSignupData } = require('./utils/validation')
+const bcrypt = require('bcrypt');
 
 
 const app = express();
@@ -10,14 +12,25 @@ const app = express();
 app.use(express.json());
 
 app.post("/signup", async (req, res) => {
-
-    //creating a new instance of the User model
-    const user = new User(req.body);
     try {
+        // validation of data
+        validateSignupData(req);
+
+        // Encrypt the password
+        const { firstName, lastName, emailId, password } = req.body;
+        const passwordHash = await bcrypt.hash(password, 10);
+
+        //creating a new instance of the User model
+        const user = new User({
+            firstName,
+            lastName,
+            emailId,
+            password: passwordHash
+        });
         await user.save();
         res.send("user added successfully");
     } catch (err) {
-        res.status(401).send(err);
+        res.status(401).send("Signup failed " + err);
     }
 })
 
@@ -48,7 +61,7 @@ app.get("/feed", async (req, res) => {
 app.patch("/user/:userId", async (req, res) => {
     const { id } = req.params.userId;
     const data = req.body;
- 
+
     //Data Sanitization before data is allowed in DB
     try {
         const ALLOWED_UPDATED = ["photoUrl", "about", "gender", "age"];
