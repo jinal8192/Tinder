@@ -19,39 +19,6 @@ app.use("/", profileRouter);
 app.use("/", requestRouter);
 app.use("/", userRouter);
 
-// get user by emailId
-app.get("/user", async (req, res) => {
-    const emailId = req.body.emailId;
-    try {
-        const user = await User.findOne({ emailId });
-        if (!user) {
-            res.status(404).send("user not found");
-        }
-        res.send(user);
-    } catch (err) {
-        res.status(400).send("Something went wrong");
-    }
-})
-
-// Feed API - get all the users from DB
-app.get("/feed", async (req, res) => {
-    try {
-        const users = await User.find({});
-        res.send(users);
-    } catch (err) {
-        res.status(400).send("something went wrong");
-    }
-})
-
-app.delete("/user", async (req, res) => {
-    const { emailId } = req.body.emailId;
-    try {
-        const user = await User.deleteOne(emailId);
-        res.send("user deleted successfully");
-    } catch (err) {
-        res.status(400).send("something went wrong");
-    }
-})
 // order of the routes matter a lot
 //dynamic routes and query params
 
